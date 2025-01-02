@@ -1,0 +1,306 @@
+\documentclass{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{tgcursor}
+\usepackage{listings}
+\usepackage{hyperref}
+\hfuzz=100.0pt
+
+\lstdefinestyle{cpp}{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{gray},
+    morecomment=[l][\color{magenta}]{\#},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{black},
+    backgroundcolor=\color{white},
+    tabsize=2,
+    captionpos=b
+}
+
+
+\begin{document}
+\fontfamily{qcr}\selectfont
+\title{Interview Review Chart}
+\author{Karl Solomon}
+\maketitle
+\tableofcontents
+\part{Distributed Systems}
+\section{Terms}
+\begin{description}
+	\item[CAP]
+	      Consistency, Availability, and Partition Tolerance. Consistency and Availability are tradeoffs. You cannot have perfect/complete of both. System design should depend on how much of each to prioritize.
+\end{description}
+\begin{description}
+	\item[ACID]
+	      Atomicity, Consistency, Isolation, and Durability
+\end{description}
+\begin{description}
+	\item[Consistency]
+	      If you have multiple copies of data they should be the same across locations.
+\end{description}
+\begin{description}
+	\item[Eventual Consistency]
+	      Eventual consistency is a consistency model used in distributed systems to ensure that, given enough time without new updates, all replicas of a data item will converge to the same value. It allows for temporary inconsistencies but guarantees that all nodes will eventually become consistent. This model is often used in systems where high availability and partition tolerance are prioritized over immediate consistency.
+\end{description}
+
+\section{Reasons for having a DS}
+\begin{itemize}
+	\item Single server means single point of failure. A single outage/attack, failure leads to failure of whole system.
+	\item Unable to scale up compute to match lots of users. Cost of Vertical Scaling is high/limiting.
+	\item Latency is high for (geographically) distant users.
+\end{itemize}
+\section{Optimizing for Consistency}
+\subsection{Two Generals Problem}
+The Two Generals Problem is a thought experiment that demonstrates the difficulty of achieving consensus between two parties over an unreliable communication channel. It involves two generals who must coordinate an attack but can only communicate via messengers who may be intercepted. The problem highlights the impossibility of guaranteeing message delivery and agreement in such a scenario, illustrating the challenges of achieving reliable communication in distributed systems.
+\subsection{2-phase commit}
+\begin{enumerate}
+	\item Leader sends "prepare"
+	\item Follower sends "ack"
+	\item If leader fails to receive ack for any follower, then it must abort/rollback the change. Each follower has a timeout after prepare upon which they will execute the rollback if they never receive "commit" message.
+	\item Else (all acks received), then leader "commits" internally
+	\item Leader sends "commit"
+	\item Follower sends "ack"
+\end{enumerate}
+\subsection{Eventual Consistency}
+\section{Locking}
+\subsection{Eventual Locking}
+\begin{itemize}
+	\item Redlock Algorithm (Redis):
+\end{itemize}
+
+\part{Parallelism}
+\section{Terms}
+\begin{description}
+	\item[Concurrency]
+	      When two or more tasks can start/run/complete in overlapping time periods. This does not necessarily mean they'll be running in overlapping time periods. Examples include: \\ RTOS
+\end{description}
+\begin{description}
+	\item[Parallelism]
+	      When tasks run at the same time (e.g. on a multi-core CPU)
+\end{description}
+\begin{description}
+	\item[Multithreading]
+	      When multiple tasks are running on a CPU. This can be implemented truly parallel where each task has access to separate HW/core. However, more common in desktop applications is SMT.
+\end{description}
+\begin{description}
+	\item[SMT (Simultaneous Multithreading)]
+	      Multiple threads share 1 core. The thread instructions are pipelines s.t. they run mostly in-parallel, and when one is waiting for I/O the other can run uninhibited, however since only one thread can access a dedicated HW block at any given time they are not truly parallel.
+\end{description}
+\section{Common Concurrency Problems}
+\begin{description}
+	\item[Atomicity-Violation] The desired series of multiple memory accesses is violated (and not enforced).
+	      \begin{lstlisting}[style=cpp]
+    T1:
+    if(obj->info)
+      print(obj->info)
+
+    T2:
+    obj->info = NULL
+    \end{lstlisting}
+\end{description}
+\begin{description}
+	\item[Order-Violation] The desired order of two memory accesses is reversed, and not enforced.
+	      \begin{lstlisting}[style=cpp]
+    T1:
+    void init()
+      mThread = createThread()
+
+    T2:
+    var = mThread->info // it is possible this runs before createThread
+    \end{lstlisting}
+\end{description}
+\begin{description}
+	\item[Deadlock]
+	      Requires: Mutual Exclusion, No Preemption, Hold-and-wait, and circular wait
+\end{description}
+\section{Concurrency and Multithreading}
+\subsection{ Basic concepts of threads and processes}
+\subsection{ Thread synchronization mechanisms (mutexes, semaphores, locks)}
+\subsection{ Race conditions:}
+\begin{enumerate}
+	\item Multiple threads accessing a shared resource
+	\item At least one thread writes to the resource
+	\item Lack of proper synchronization
+\end{enumerate}
+\subsection{ deadlocks}
+\begin{lstlisting}[style=cpp]
+std::mutex m1, m2;
+// Must have 2 locks where they are locked in different orders in different locations/threads
+thread1: m1.lock(); m2.lock(); m1.unlock(); m2.unlock();
+thread2: m2.lock(); m1.lock(); m2.unlock(); m1.unlock();
+          \end{lstlisting}
+\subsection{ Atomic operations}
+\begin{lstlisting}[style=cpp]
+std::atomic<T> var; // where T is a primitive type
+var = val;
+var.load(val);
+var.store(val);
+var.wait(); // waits until the value changes
+T current = var.exchange(val); // writes val to var and gets previous/current value of var
+// Compare-and-swap. Atomically compares object.value with that of expected. If bitwise-equal then replaces former with desired. Otherwise loads actual value into expected (via load operation)
+bool res = var.compare_exchange_strong(expected, desired); // preferred when don't expect high contention and cost of retrying is significant. Simpler, but slower.
+bool res = var.compare_exchange_weak(expected, desired);  // preferred if you're anyways retrying in a loop or cost of retrying is low. More efficient, but more complex.
+              \end{lstlisting}
+\begin{lstlisting}[style=cpp]
+// Weak usage
+std::atomic<int> value{0};
+int expected = 0;
+int desired = 1;
+while(!value.compare_exchange_weak(expected, desired)){
+  ; // handle spurrious failures
+}
+
+// Strong usage
+if(value.compare_exchange_strong(expected, desired)){
+  // op successful
+}
+else
+{
+  // op failed
+}
+              \end{lstlisting}
+
+\section{Thread-Safe Data Structures:}
+\subsection{ Concurrent collections}
+\subsection{ Concurrent collections (e.g., ConcurrentQueue, ConcurrentBag)}
+\subsection{ Lock-free data structures}
+\subsection{ Understanding the differences between thread-safe and non-thread-safe collections}
+\section{Design Patterns for Concurrency:}
+\subsection{ Producer-Consumer pattern}
+\subsection{ Readers-Writer pattern}
+\subsection{ Thread pool pattern}
+\section{Language-Specific Concurrency Features for C++:}
+\subsection{ std::thread}
+\subsection{ <atomic>}
+\section{Callback Mechanisms:}
+\subsection{ Function pointers}
+\lstinputlisting[style=cpp] {../sources/functionPointers.cpp}
+\subsection{ Delegates (in languages that support them)}
+\subsection{ Lambda expressions}
+\section{Performance Considerations:}
+\subsection{ Understanding the overhead of different synchronization mechanisms}
+Generally best practice to measure performance in single-threaded vs multithreaded/parallel environments. Since there is overhead with creating/cleaning up threads/processes it can make your program run slower in smaller data sets.
+\subsection{ Balancing thread safety with performance}
+\section{Testing Multithreaded Code:}
+\subsection{ Techniques for writing unit tests for concurrent code}
+\subsection{ Tools for detecting race conditions and deadlocks}
+\begin{itemize}
+	\item \textbf{Helgrind}: Part of Valgrind suite. Checks for race conditions, but slow.
+	\item \textbf{ThreadSanitizer}: Compiler flag in llvm/clang. Faster than Helgrind.
+	\item \textbf{RacerD}: Meta's C++-specific concurrent static analyzer. Good for larget code-bases.
+	\item \textbf{Clang Static Analyzer}: Detects some simple conditions.
+\end{itemize}
+\section{Algorithms for Concurrent Operations:}
+\subsection{ Compare-And-Swap (CAS) operations}
+\subsection{ Lock-free algorithms}
+\section{Memory Models:}
+\subsection{ Understanding memory barriers and volatile variables}
+\begin{description}
+	\item[Barrier/Fence]
+	      Ensure that memory operations are not reordered across the fence by the compiler (which could lead to unexpected behavior). This is necessary b/c modern CPUS/compilers reorder instructions for performance optimization.
+\end{description}
+\verb!std::atomic_thread_fence(std::memory_order::<order>;! is the most general barrier. \href{https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence}{cppref}.
+List of memory orders:
+\begin{itemize}
+	\item memory\_order\_relaxed: No ordering guarantees. Guarantees atomicity.
+	\item memory\_order\_acquire: Prevents reordering of loads after the barrier. Useful for Consumers.
+	\item memory\_order\_release: Prevents reordering of stores before the barrier. Useful for Producers.
+	\item memory\_order\_acq\_rel: Acquire + Release semantics. Useful for Read-modify-write operations.
+	\item memory\_order\_seq\_cst: Strongest ordering. Ensures sequential consistency across all threads.
+\end{itemize}
+\lstinputlisting[style=cpp] {../sources/fence/fence.cpp}
+\subsection{ Cache coherence issues in multi-core systems TODO (ksolomon): add info about cache banks, parity, and typical cache hit}/miss times.
+\begin{description}
+	\item[Cache Coherence]
+	      The process of ensuring that data is stored in multiple caches within a multiprocessor system is consistent and synchronized.
+\end{description}
+This ensures that all processors have a \textit{consistent} view of shared memory. Cache coherence protocols manage the flow of data between caches, updating cache lines and tracking the status of shared data. This can be complicated because it requires balancing perforamnce and coherence overhead. The 2 main types of protocols are Directory-based and Snoop-based.
+\begin{description}
+	\item[Directory-based]
+	      The sharing status of a block of physical memory is kept in just one location (the directory). The direcotry can also be distributed to improve scalability. Communication is established using point-to-point requests through the interconnection network.
+\end{description}
+\begin{description}
+	\item[Snoop-based]
+	      Every cache that has a copy of the data from a block of physical memory also has a copy of the sharing status of the block, but no centralized state is kept. Caches are all accessible via some broadcast medium (a bus or switch), and all cache controllers monitor or \textit{snoop} on the medium to determine whether or not they have a copy of a block that is requested on a bus or switch access. Requires broadcast, csince caching information is at processors. This is useful for small-scale machines.
+\end{description}
+\begin{description}
+	\item[Point of Coherency (PoC)]
+	      Point at which all agents in a system which can access memory are guaranteed to see the same data.
+\end{description}
+\begin{description}
+	\item[Migration]
+	      Data is migrated to the local cache levels.
+\end{description}
+\begin{description}
+	\item[Replication]
+	      The same data is replicated across all caches.
+\end{description}
+Assume Snoop-based protocol. There are 2 ways to maintaint coherence:
+\begin{enumerate}
+	\item \textbf{Write Invalidate Protocol}: Ensure that a processor has exclusive access to a data item before it writes that item. This is most common protocol.
+	\item \textbf{Write Broadcast/Update}: All cached copies are updated simultaneously. This requires more bandwidth. When multiple updates happen to the same location, unnecessary updates are done. However, this is a lower latency between write/read.
+\end{enumerate}
+\section{Practice Problems:}
+\begin{itemize}
+	\item Implement a thread-safe singleton
+	      \lstinputlisting[style=cpp] {../sources/threadSafeSingleton.cpp}
+	\item Create a simple producer-consumer queue
+	      \lstinputlisting[style=cpp] {../sources/producerConsumerQueue.cpp}
+	\item Implement a basic thread pool
+	      \lstinputlisting[style=cpp] {../sources/basicThreadPool.cpp}
+	\item Dining Philosophers
+	      \lstinputlisting[style=cpp] {../sources/diningPhilosophers.cpp}
+\end{itemize}
+\part{Operating Systems}
+\section{Virtualization}
+\subsection{Scheduling}
+\subsection{Memory}
+\section{Concurrency}
+\subsection{Mutex}
+\subsection{Bugs}
+\subsection{Events}
+\section{Persistence}
+\subsection{HDD/RAID}
+\subsection{File Systems}
+\subsection{Integrity}
+\subsection{Distributed Systems}
+\section{Security}
+\section{Caches}
+\begin{description}
+	\item[TLB]
+	      The TLB is a small, fast, and fast-access memory that is used to translate virtual memory addresses into physical memory addresses. a.k.a. Translation Lookaside Buffer.
+\end{description}
+\section{Basic Concepts}
+\begin{itemize}
+	\item \textbf{TLB: Translate Lookaside Buffer}
+	\item \textbf{Processes and Threads}
+	      \begin{itemize}
+		      \item Process creation and termination
+		      \item Thread lifecycle and management
+	      \end{itemize}
+	\item \textbf{Memory Management}
+	      \begin{itemize}
+		      \item Virtual memory
+		      \item Paging and segmentation
+	      \end{itemize}
+	\item \textbf{File Systems}
+	      \begin{itemize}
+		      \item File system structure
+		      \item File operations and permissions
+	      \end{itemize}
+\end{itemize}
+
+
+\end{document}
+\enddocument

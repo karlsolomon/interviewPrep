@@ -1,0 +1,95 @@
+\documentclass{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{tgcursor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\lstdefinestyle{cpp}{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{gray},
+    morecomment=[l][\color{magenta}]{\#},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{black},
+    backgroundcolor=\color{white},
+    tabsize=2,
+    captionpos=b
+}
+
+
+\begin{document}
+\fontfamily{qcr}\selectfont
+\title{Interview Review Chart}
+\author{Karl Solomon}
+\maketitle
+\tableofcontents
+\part{C}
+\section{Preprocessor}
+    \begin{lstlisting}[style=cpp]
+# // stringizes the macro parameter
+#define stringify(x) #x
+#define foo 1
+stringify(foo) // --> evaluates to "foo", NOT "1"
+\end{lstlisting}
+
+    \begin{lstlisting}[style=cpp]
+## // concatenates the macro parameter
+#define COMMAND(NAME)  {#NAME, NAME ## _command}
+struct command commands[] = {
+  COMMAND(quit), // equivalent to {quit_command}
+  COMMAND(help), // equivalent to {help_command}
+}
+\end{lstlisting}
+
+    \begin{itemize}
+      \item predefined macros
+        \begin{itemize}
+          \item \_\_FILE\_\_
+          \item \_\_LINE\_\_
+          \item \_\_DATE\_\_
+          \item \_\_TIME\_\_
+          \item \_\_STDC\_VERSION\_\_
+          \item \_\_cplusplus
+        \end{itemize}
+      \item item2
+      \item item3
+      \item item4
+    \end{itemize}
+
+\section{Peripherals}
+    \begin{itemize}
+      \item \textbf{I2C}\\
+        SDA is data, SCL is clock. PURs typically in the 1-4.7k range. Too weak = slow comm and errors. Clocks are usually 100k-1MHz. Addr can be 7 or 10 bit. This is rate-limiter for number of slaves, though line impedance would increase for each slave. Here are some use usage examples:
+        \begin{enumerate}
+          \item Master sends START and slave Addr
+          \item Master sends data to slave
+          \item Master terminates with a STOP
+        \end{enumerate}
+        \begin{enumerate}
+          \item Master sends START and slave Addr
+          \item Master sends data to slave
+          \item Master sends repeatedSTART and either sends more data to slave or receives data from slave.
+          \item Master sends STOP
+        \end{enumerate}
+      \item \textbf{SPI}\\
+        Serial Peripheral Interface (SPI) is a synchronous serial communication protocol used for short-distance communication, primarily in embedded systems. It uses a master-slave architecture with a single master and multiple slaves. Communication is full-duplex, and it requires four wires: MOSI, MISO, SCLK, and SS.
+      \item \textbf{UART}\\
+        Universal Asynchronous Receiver-Transmitter (UART) is a hardware communication protocol that uses asynchronous serial communication with configurable speed. It is commonly used for communication between microcontrollers and peripherals. UART requires only two wires: TX (transmit) and RX (receive).
+      \item \textbf{USB}\\
+        Universal Serial Bus (USB) is an industry-standard for short-distance digital data communications. It supports plug-and-play installation and hot swapping. USB is used for connecting peripherals such as keyboards, mice, printers, and external storage devices to computers.
+      \item \textbf{HDMI}\\
+        High-Definition Multimedia Interface (HDMI) is a proprietary audio/video interface for transmitting uncompressed video data and compressed or uncompressed digital audio data from an HDMI-compliant source device to a compatible display device. It is commonly used for connecting devices like TVs, monitors, and projectors.
+    \end{itemize}
+\end{document}
+\enddocument

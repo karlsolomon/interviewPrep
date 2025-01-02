@@ -1,0 +1,110 @@
+\documentclass{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{tgcursor}
+\usepackage{listings}
+\usepackage{hyperref}
+\hfuzz=100pt
+
+\lstdefinestyle{cpp}{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{gray}\itshape,
+    morecomment=[l][\color{magenta}]{\#},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{black},
+    backgroundcolor=\color{white},
+    tabsize=2,
+    captionpos=b,
+    identifierstyle=\color{black},
+    emph={int,char,double,float,unsigned,void,bool},
+    emphstyle=\color{violet},
+    emph=[2]{std,vector,string,map,set},
+    emphstyle=[2]\color{orange}
+}
+
+
+\begin{document}
+\fontfamily{qcr}\selectfont
+\title{Algorithms}
+\author{Karl Solomon}
+\maketitle
+\tableofcontents
+\newpage
+\part{Data Structures}
+    \section{Queue/FIFO}
+    \section{Stack/LIFO}
+    \section{Heap/Priority Queue}
+    \section{Tree/Graph}
+        \subsection{Binary Tree}
+          \begin{itemize}
+            \item Check if two BST are same
+              \lstinputlisting[style=cpp] {sources/algorithms/bst/bstSame.cpp}
+            \item Insert Element
+              \lstinputlisting[style=cpp] {sources/algorithms/bst/bstInsert.cpp}
+            \item Delete Element
+              \lstinputlisting[style=cpp] {sources/algorithms/bst/bstDelete.cpp}
+            \item Lowest Common Ancestor
+              \lstinputlisting[style=cpp] {sources/algorithms/bst/bstLCA.cpp}
+            \item Determine if tree is BST
+              \lstinputlisting[style=cpp] {sources/algorithms/bst/bstCheck.cpp}
+            \item Traversal
+              \begin{itemize}
+                \item Level-Order
+                  \lstinputlisting[style=cpp] {sources/algorithms/bst/bstTraverseLevelOrder.cpp}
+                \item In-order: Left subtree, then node, then right subtree
+                  \lstinputlisting[style=cpp] {sources/algorithms/bst/bstTraverseInorder.cpp}
+                \item PreOrder: Node, then left subtree, then right subtree
+                \item PostOrder: Left subtree, then right subtree, then Node
+              \end{itemize}
+          \end{itemize}
+        \subsection{Graphs}
+          Storing Graphs:
+          \begin{itemize}
+            \item Adjacency Matrix: 2D array NxN. [n,m] = nonZeroNum means there is an edge from node n to node m. All nodes should not include edges to self. Edges can be weighted (to suggest things like cost/distance). In directional-graphs you can have [n,m] = nonZero, but [m,n] = 0. Cons: O(N\^2) memory. This is especially bad for sparse graphs.
+            \item Adjacency List: Store edges as a list of neighbor nodes. Each node contains a list of neighbors. It is possible to represent weights here with a list of std::pair<Node*, int>.
+          \end{itemize}
+          Graph Algorithms:
+          \begin{itemize}
+            \item Bellman-Ford
+              \lstinputlisting[style=cpp] {sources/algorithms/graph/bellmanFord.cpp}
+            \item Dijkstra's
+              \lstinputlisting[style=cpp] {sources/algorithms/graph/dijkstra.cpp}
+            \item Ford-Fulkerson
+              \lstinputlisting[style=cpp] {sources/algorithms/graph/fordFulkerson.cpp}
+            \item Kruskals's
+              \lstinputlisting[style=cpp] {sources/algorithms/graph/kruskal.cpp}
+            \item Nearest neighbor
+              \lstinputlisting[style=cpp] {sources/algorithms/graph/nearestNeighbor.cpp}
+            \item Prim's
+              \lstinputlisting[style=cpp] {sources/algorithms/graph/prim.cpp}
+            \item DFS
+              \lstinputlisting[style=cpp] {sources/algorithms/graph/dfs.cpp}
+            \item BFS
+              \lstinputlisting[style=cpp] {sources/algorithms/graph/bfs.cpp}
+          \end{itemize}
+    \section{Lists}
+        \subsection{Singly Linked List}
+        \subsection{Doubly Linked List}
+\part{Types of Algorithms}
+    \section{Greedy}
+    \section{DP}
+    \section{DFS}
+    \section{BFS}
+    \section{Sorting}
+    \section{Network Flow}
+        \subsection{Dijkstra's}
+
+
+\end{document}
+\enddocument

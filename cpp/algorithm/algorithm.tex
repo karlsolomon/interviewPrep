@@ -1,0 +1,356 @@
+\documentclass{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{tgcursor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\lstdefinestyle{cpp}{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{gray}\itshape,
+    morecomment=[l][\color{magenta}]{\#},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{black},
+    backgroundcolor=\color{white},
+    tabsize=2,
+    captionpos=b,
+    identifierstyle=\color{black},
+    emph={int,char,double,float,unsigned,void,bool},
+    emphstyle=\color{violet},
+    emph=[2]{std,vector,string,map,set},
+    emphstyle=[2]\color{orange}
+}
+
+
+\begin{document}
+\fontfamily{qcr}\selectfont
+\title{<algorithm>}
+\author{Karl Solomon}
+\maketitle
+\tableofcontents
+\newpage
+
+
+\section{batchOperations}
+    \begin{itemize}
+      \item for\_each
+      \item ranges::for\_each (Note: does not support execution policies)
+      \item for\_each\_n
+      \item ranges::for\_each\_n \\
+        \lstinputlisting[style=cpp] {sources/foreach.cpp}
+    \end{itemize}
+\section{Search Operations}
+    \begin{itemize}
+      \item all\_of
+      \item any\_of
+      \item none\_of \\
+        \lstinputlisting[style=cpp] {sources/search/all_of.cpp}
+      \item ranges::contains
+      \item ranges::contains\_subrange \\
+        \lstinputlisting[style=cpp] {sources/search/contains.cpp}
+      \item find
+      \item find\_if
+      \item find\_if\_not
+      \item ranges::find
+      \item ranges::find\_if
+      \item ranges::find\_if\_not \\
+        \lstinputlisting[style=cpp] {sources/search/find.cpp}
+      \item find\_last
+      \item find\_last\_if
+      \item find\_last\_if\_not
+      \item find\_end
+      \item ranges::find\_end \\
+        \lstinputlisting[style=cpp] {sources/search/find_last.cpp}
+      \item find\_end
+      \item ranges::find\_end
+      \item find\_first\_of
+      \item ranges::find\_first\_of
+      \item adjacent\_find
+      \item ranges::adjacent\_find
+        \lstinputlisting[style=cpp] {sources/search/firstAdjacent.cpp}
+      \item count
+      \item count\_if
+      \item ranges::count
+      \item ranges::count\_if
+        \lstinputlisting[style=cpp] {sources/search/count.cpp}
+      \item mismatch
+      \item ranges::mismatch
+        \lstinputlisting[style=cpp] {sources/search/mismatch.cpp}
+      \item equal
+      \item ranges::equal
+        \lstinputlisting[style=cpp] {sources/search/equal.cpp}
+      \item search
+      \item search\_n
+      \item ranges::search
+      \item ranges::search\_n
+        \lstinputlisting[style=cpp] {sources/search/search.cpp}
+      \item ranges::starts\_with
+      \item ranges::ends\_with
+        \lstinputlisting[style=cpp] {sources/search/startsWith.cpp}
+    \end{itemize}
+\section{Fold Operations}
+    \begin{itemize}
+      \item ranges::fold\_left
+      \item ranges::fold\_left\_first
+      \item ranges::fold\_left\_with\_iter
+      \item ranges::fold\_left\_first\_with\_iter
+      \item ranges::fold\_right
+      \item ranges::fold\_right\_last
+        \lstinputlisting[style=cpp] {sources/fold.cpp}
+    \end{itemize}
+\section{Copy Operations}
+    \begin{itemize}
+      \item copy: Copies all elements from numbers to result
+      \item copy\_if: Copies only even numbers from numbers to result
+      \item ranges::copy
+      \item ranges::copy\_if
+      \item copy\_n: Copies the first 5 elements from numbers to result
+      \item ranges::copy\_n: Copies elements from numbers to result in reverse order.
+      \item copy\_backwards
+      \item ranges::copy\_backwards
+        \lstinputlisting[style=cpp] {sources/copy/copy.cpp}
+      \item move
+      \item ranges::move
+      \item move\_backward
+      \item ranges::move\_backward
+        \lstinputlisting[style=cpp] {sources/copy/move.cpp}
+    \end{itemize}
+\section{Swap Operations}
+    \begin{itemize}
+      \item swap
+      \item swap\_ranges
+      \item ranges::swap\_ranges
+      \item iter\_swap
+        \lstinputlisting[style=cpp] {sources/swap.cpp}
+    \end{itemize}
+\section{Transform Operations}
+    \begin{itemize}
+      \item transform
+      \item ranges::transform \\
+        \lstinputlisting[style=cpp] {sources/transform/transform.cpp}
+      \item replace
+      \item replace\_if TODO: check to see if I can use n (or a lambda) as replacement value
+      \item ranges::replace
+      \item ranges::replace\_if
+        \lstinputlisting[style=cpp] {sources/transform/replace.cpp}
+      \item replace\_copy
+      \item ranges::replace\_copy
+      \item replace\_copy\_if
+      \item ranges::replace\_copy\_if
+        \lstinputlisting[style=cpp] {sources/transform/replaceCopy.cpp}
+    \end{itemize}
+\section{Generation Operations}
+    \begin{itemize}
+      \item fill
+      \item fill\_n
+      \item ranges::fill
+      \item ranges::fill\_n
+        \lstinputlisting[style=cpp] {sources/generate/fill.cpp}
+      \item generate TODO: when to use generate vs iota?
+      \item generate\_n
+      \item ranges::generate
+      \item ranges::generate\_n
+        \lstinputlisting[style=cpp] {sources/generate/generate.cpp}
+    \end{itemize}
+\section{Removing Operations}
+    \begin{itemize}
+      \item remove: removes all occurrences of a specified value TODO: how to handle updating perceived size when elements are removed?
+      \item remove\_if: removes all elements that satisfy a defined condition
+      \item ranges::remove
+      \item ranges::remove\_if
+      \item remove\_copy: copies elements from the source to the result that are not equal to the value
+      \item remove\_copy\_if: copies elements from the source to the result that do not satisfy the condition
+      \item ranges::remove\_copy
+      \item ranges::remove\_copy\_if
+        \lstinputlisting[style=cpp] {sources/remove/remove.cpp}
+      \item unique
+      \item unique\_copy
+      \item ranges::unique
+      \item ranges::unique\_copy
+        \lstinputlisting[style=cpp] {sources/remove/unique.cpp}
+    \end{itemize}
+\section{Order-Changing Operations}
+    \begin{itemize}
+      \item reverse
+      \item ranges::reverse
+      \item reverse\_copy
+      \item ranges::reverse\_copy
+      \item rotate
+      \item rotate\_copy
+      \item ranges::rotate
+      \item ranges::rotate\_copy
+      \item shift\_left
+      \item shift\_right
+      \item ranges::shift\_left
+      \item ranges::shift\_right
+      \item shuffle
+      \item random\_shuffle
+      \item ranges::shuffle
+        \lstinputlisting[style=cpp] {sources/order/order.cpp}
+    \end{itemize}
+\section{Random Number Generation}
+    \begin{itemize}
+      \item ranges::generate\_random
+    \end{itemize}
+\section{Sampling Operations}
+    \begin{itemize}
+      \item sample
+      \item ranges::sample
+        \lstinputlisting[style=cpp] {./sources/sample/sample.cpp}
+    \end{itemize}
+\section{Partitioning Operations}
+    \begin{itemize}
+      \item is\_partitioned
+      \item ranges::is\_partitioned
+      \item partition
+      \item ranges::partition
+      \item partition\_copy
+      \item ranges::partition\_copy
+      \item stable\_partition
+      \item ranges::stable\_partition
+      \item partition\_point
+      \item ranges::partition\_point
+        \lstinputlisting[style=cpp] {sources/partition/partition.cpp}
+    \end{itemize}
+\section{Sorting Operations}
+    \begin{itemize}
+      \item sort
+      \item ranges::sort
+      \item stable\_sort
+      \item ranges::stable\_sort
+      \item partial\_sort
+      \item ranges::partial\_sort
+      \item partial\_sort\_copy
+      \item ranges::partial\_sort\_copy
+      \item is\_sorted
+      \item ranges::is\_sorted
+      \item is\_sorted\_until
+      \item ranges::is\_sorted\_until
+      \item nth\_element
+      \item ranges::nth\_element
+        \lstinputlisting[style=cpp] {sources/sort/sort.cpp}
+    \end{itemize}
+\section{Binary Search Operations (on partitioned ranges)}
+    \begin{itemize}
+      \item lower\_bound
+      \item ranges::lower\_bound
+      \item upper\_bound
+      \item ranges::upper\_bound
+      \item equal\_range
+      \item ranges::equal\_range
+      \item binary\_search
+      \item ranges::binary\_search
+        \lstinputlisting[style=cpp] {sources/bst/bst.cpp}
+    \end{itemize}
+\section{Set Operation (on sorted ranges)}
+    \begin{itemize}
+      \item includes
+      \item ranges::includes
+      \item set\_union
+      \item ranges::set\_union
+      \item set\_intersection
+      \item ranges::set\_intersection
+      \item set\_difference
+      \item ranges::set\_difference
+      \item set\_symmetric\_difference
+      \item ranges::set\_symmetric\_difference
+        \lstinputlisting[style=cpp] {sources/set/set.cpp}
+    \end{itemize}
+\section{Merge Operations (on sorted ranges)}
+    \begin{itemize}
+      \item merge
+      \item ranges::merge
+      \item inplace\_merge
+      \item ranges::inplace\_merge
+        \lstinputlisting[style=cpp] {sources/merge/merge.cpp}
+    \end{itemize}
+\section{Heap Operations}
+    \begin{itemize}
+      \item push\_heap
+      \item ranges::push\_heap
+      \item pop\_heap
+      \item ranges::pop\_heap
+        \lstinputlisting[style=cpp] {sources/heap/pushPop.cpp}
+      \item make\_heap
+      \item ranges::make\_heap
+      \item sort\_heap
+      \item ranges::sort\_heap
+        \lstinputlisting[style=cpp] {sources/heap/makeHeap.cpp}
+      \item is\_heap
+      \item ranges::is\_heap
+      \item is\_heap\_until
+      \item ranges::is\_heap\_until
+        \lstinputlisting[style=cpp] {sources/heap/isHeap.cpp}
+    \end{itemize}
+\section{Min/Max Operations}
+    \begin{itemize}
+      \item max
+      \item min
+      \item ranges::max
+      \item ranges::min
+        \lstinputlisting[style=cpp] {sources/minmax/maxMin.cpp}
+      \item max\_element
+      \item min\_element
+      \item ranges::max\_element
+      \item ranges::min\_element
+        \lstinputlisting[style=cpp] {sources/minmax/maxElem_minElem.cpp}
+      \item minmax
+      \item ranges::minmax
+      \item minmax\_element
+      \item ranges::minmax\_element
+        \lstinputlisting[style=cpp] {sources/minmax/minmax.cpp}
+      \item clamp TODO: show how it works, not just how to invoke
+      \item ranges::clamp
+        \lstinputlisting[style=cpp] {sources/minmax/clamp.cpp}
+    \end{itemize}
+\section{Lexicographical Operations}
+    \begin{itemize}
+      \item lexicographical\_compare
+      \item ranges::lexicographical\_compare
+      \item lexicographical\_compare\_three\_way
+    \end{itemize}
+\section{Permutation Operations}
+    \begin{itemize}
+      \item next\_permutation
+      \item ranges::next\_permutation
+      \item previous\_permutation
+      \item ranges::previous\_permutation
+      \item is\_permutation
+      \item ranges::is\_permutation
+        \lstinputlisting[style=cpp] {sources/permutation/permutation.cpp}
+    \end{itemize}
+\section{Numeric Operations}
+    \begin{itemize}
+      \item iota
+      \item ranges::iota
+        \lstinputlisting[style=cpp] {sources/numeric/iota.cpp}
+      \item accumulate
+      \item reduce
+      \item transform\_reduce
+        \lstinputlisting[style=cpp] {sources/numeric/accumulate.cpp}
+      \item inner\_product
+        \lstinputlisting[style=cpp] {sources/numeric/innerProduct.cpp}
+      \item adjacent\_difference
+        \lstinputlisting[style=cpp] {sources/numeric/adjacentDifference.cpp}
+      \item partial\_sum
+        \lstinputlisting[style=cpp] {sources/numeric/partialSum.cpp}
+      \item exclusive\_scan
+      \item inclusive\_scan
+      \item transform\_exclusive\_scan
+      \item transform\_inclusive\_scan
+        \lstinputlisting[style=cpp] {sources/numeric/scan.cpp}
+    \end{itemize}
+\section{Uninitialized Memory Operations}
+\end{document}
+\enddocument

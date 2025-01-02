@@ -1,0 +1,3 @@
+/home/ksolomon/git/resume/review/code/build/CMakeFiles/threadPool.dir
+/home/ksolomon/git/resume/review/code/build/CMakeFiles/edit_cache.dir
+/home/ksolomon/git/resume/review/code/build/CMakeFiles/rebuild_cache.dir

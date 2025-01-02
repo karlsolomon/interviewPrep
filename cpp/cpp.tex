@@ -1,0 +1,335 @@
+\documentclass{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{tgcursor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\lstdefinestyle{cpp}{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{gray},
+    morecomment=[l][\color{magenta}]{\#},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{black},
+    backgroundcolor=\color{white},
+    tabsize=2,
+    captionpos=b
+}
+
+
+\begin{document}
+\fontfamily{qcr}\selectfont
+\title{C++ Review}
+\author{Karl Solomon}
+\maketitle
+\tableofcontents
+\part{C++}
+\section{Classes}
+    \begin{itemize}
+      \item \textbf{Class Definition}
+        \begin{itemize}
+          \item Syntax and structure
+          \item Access specifiers: public, private, protected
+        \end{itemize}
+      \item \textbf{Inheritance}
+        \begin{itemize}
+          \item Single and multiple inheritance
+          \item Virtual inheritance
+        \end{itemize}
+      \item \textbf{Polymorphism}
+        \begin{itemize}
+          \item Function overloading
+          \item Operator overloading
+          \item Virtual functions and abstract classes
+        \end{itemize}
+    \end{itemize}
+\section{Containers}
+    \begin{itemize}
+      \item Sequence
+        \begin{itemize}
+          \item \textbf{array}
+            \begin{lstlisting}[style=cpp]
+std::array<int, 3> arr; // uninitialized (whatever was in memory before)
+std::array<int, 3> arr = {}; // initialized as 0s
+std::array<int, 3> arr1 = {1, 2, 3};
+std::array<int, 3> arr2{1, 2, 4};
+arr1.fill(0); // fills array with 0s
+arr1.swap(arr2); // swaps contents of arr1 and arr2
+      \end{lstlisting}
+          \item \textbf{vector}
+            \begin{lstlisting}[style=cpp]
+std::vector<int> v;
+v.capacity(); // size of currently allocated memory
+v.shrink_to_fit(); // releases unused memory
+v.reserve(100); // pre-allocates 100 elements
+v.clear(); // erases all elements
+v.erase(v.begin()); // erases first element
+v.push_back(1); // adds 1 to the end
+v.rbegin(); // reverses iterator
+std::erase_if(v, [](int x) { return x > 10; }); // removes all elements > 10
+std::vector<Pair<int,int>> classV;
+classV.emplace_back(10,1); // create Pair object and push to back
+         \end{lstlisting}
+          \item \textbf{inplace\_vector}
+          \item \textbf{deque}
+        \end{itemize}
+      \item Associative
+        \begin{itemize}
+          \item \textbf{Set}
+          \item \textbf{Map}
+          \item \textbf{Multiset}
+          \item \textbf{Multimap}
+        \end{itemize}
+      \item Unordered Associative
+        \begin{itemize}
+          \item \textbf{unordered\_set}
+          \item \textbf{unordered\_map}
+          \item \textbf{unordered\_multiset}
+          \item \textbf{unordered\_multimap}
+        \end{itemize}
+      \item Adaptors
+        \begin{itemize}
+          \item \textbf{stack}
+          \item \textbf{queue}
+          \item \textbf{priority\_queue} Abstract data type that provides efficient access to the highest priority element. This is basically c++'s implementation of a Max Heap.
+            \lstinputlisting[style=cpp] {./sources/containers/priorityQueue.cpp}
+          \item \textbf{flat\_set}
+          \item \textbf{flat\_map}
+          \item \textbf{flat\_multiset}
+          \item \textbf{flat\_multimap}
+        \end{itemize}
+    \end{itemize}
+\section{Modern C++}
+    \begin{itemize}
+      \item C++11
+        \begin{itemize}
+          \item \textbf{Alias Templates}
+            \lstinputlisting[style=cpp] {sources/aliasTemplates.cpp}
+          \item \textbf{atomic} \\
+            Well-defined behavior in the event of RMW race contition. Accesses to atomics may establish inter-thread synchronization and order non-atomic accesses.
+            \begin{lstlisting}[style=cpp]
+atomic_bool b; // same as std::atomic<bool> b;
+         \end{lstlisting}
+          \item \textbf{auto}
+          \item \textbf{constexpr}
+          \item \textbf{final} \\
+            \begin{itemize}
+              \item Specifies that a class cannot be inherited from.
+              \item When used in a virtual function, specifies that the function cannot be overridden by a derived class.
+              \item final is also a legal variable/function name. Only has special meaning in member function declaration or class head.
+            \end{itemize}
+            \begin{lstlisting}[style=cpp]
+struct Base
+{
+    virtual void foo();
+};
+struct A : Base
+{
+    void foo() final; // Base::foo is overridden and A::foo is the final override
+    void bar() final; // Error: bar cannot be final as it is non-virtual
+};
+ 
+struct B final : A // struct B is final
+{
+    void foo() override; // Error: foo cannot be overridden as it is final in A
+};
+ 
+struct C : B {}; // Error: B is final
+         \end{lstlisting}
+          \item \textbf{initializer list}
+            \lstinputlisting[style=cpp] {sources/initializerList.cpp}
+          \item \textbf{iota}
+            \begin{lstlisting}[style=cpp]
+void iota(ForwardIterator begin, ForwardIterator end, T v); // fills range [first-last] with sequentially increasing values starting at v in begin
+         \end{lstlisting}
+          \item \textbf{lambdas}
+            \lstinputlisting[style=cpp] {sources/lambdas.cpp}
+            \begin{description}
+              \item[capture]
+                comma-separated list of variables which are captured/modified by the lambda. Captures cannot have same name as input parameters.
+            \end{description}
+            Capture list
+            \begin{itemize}
+              \item \verb!&! = capture all used variables by reference
+              \item \verb!=! = capture all used variables by copy
+              \item \verb!varName! = by-copy
+              \item \verb!varName...! = by-copy pack-expansion
+              \item \verb!varName initializer! = by-copy  w/ initializer
+              \item \verb!&varName! = by-reference
+              \item \verb!&varName...! = by-reference pack-expansion
+              \item \verb!&varName initializer! = by-reference w/ initializer
+              \item \verb!this! = by-reference capture of current object
+              \item \verb!*this! = by-copy capture of current object
+              \item ... = by-copy capture of all objects w/ pack expansion
+              \item \verb!&... initializer = by-reference w/ initializer and pack expansion!
+            \end{itemize}
+            \begin{lstlisting}[style=cpp]
+// If the capture-default is &, subsequent simple captures must not begin with &. 
+[&] {};          // OK: by-reference capture default
+[&, i] {};       // OK: by-reference capture, except i is captured by copy
+[&, &i] {};      // Error: by-reference capture when by-reference is the default
+[&, this] {};    // OK, equivalent to [&]
+[&, this, i] {}; // OK, equivalent to [&, i]
+         \end{lstlisting}
+            \begin{lstlisting}[style=cpp]
+// If the capture-default is =, subsequent simple captures must begin with & or be *this(since C++17) or this(since C++20). 
+[=] {};        // OK: by-copy capture default
+[=, &i] {};    // OK: by-copy capture, except i is captured by reference
+[=, *this] {}; // until C++17: Error: invalid syntax
+               // since C++17: OK: captures the enclosing S2 by copy
+[=, this] {};  // until C++20: Error: this when = is the default
+                   // since C++20: OK, same as [=]
+         \end{lstlisting}
+            \begin{lstlisting}[style=cpp]
+         \end{lstlisting}
+          \item \textbf{mutex}
+          \item \textbf{override}
+          \item \textbf{random}
+            \begin{lstlisting}[style=cpp]
+#include <stdlib>
+int rand(); // returns integer in [0, RAND_MAX]
+         \end{lstlisting}
+            \begin{lstlisting}[style=cpp]
+#include <random>
+// default_random_engine
+// philox4x64 -> philox_engine
+// random_device = non-deterministic generator based on hardware entropy
+std::random_device rd;
+rd.entropy(); // estimate of random number device entropy. Deterministic entropy = 0.
+std::uniform_real_distribution<double> dist(0.0, 1.0);
+         \end{lstlisting}
+            Distribution list
+            \begin{itemize}
+              \item uniform
+                \begin{itemize}
+                  \item int
+                  \item real (double)
+                \end{itemize}
+              \item bernoulli
+                \begin{itemize}
+                  \item bernoulli
+                  \item binomial
+                  \item negative binomial
+                  \item geometric
+                \end{itemize}
+              \item Poisson
+                \begin{itemize}
+                  \item poisson
+                  \item exponential
+                  \item gamma
+                  \item weibull
+                  \item extreme\_value
+                \end{itemize}
+              \item Normal
+                \begin{itemize}
+                  \item normal
+                  \item lognormal
+                  \item chi\_squared
+                  \item cauchy
+                  \item fisher\_f
+                  \item student\_t
+                \end{itemize}
+              \item Sampling
+                \begin{itemize}
+                  \item discrete
+                  \item piecewise\_constant
+                  \item piecewise\_linear
+                  \item item4
+                \end{itemize}
+            \end{itemize}
+          \item \textbf{range-based for}
+          \item \textbf{thread}
+          \item \textbf{trailing return type}
+            \verb!auto main() --> int {return 0;}!
+        \end{itemize}
+      \item C++14
+        \begin{itemize}
+          \item \textbf{Variable Templates}
+          \item \textbf{Generic Lambdas}
+        \end{itemize}
+      \item C++17
+        \begin{itemize}
+          \item \textbf{tuple}
+            \lstinputlisting[style=cpp] {sources/tuples.cpp}
+          \item \textbf{execution policies}
+            \begin{description}
+              \item[seq]
+                used to disambiguate parallel algorithm overloading and require that a parallel algorithm's execution must be sequential. This is used by default when no execution policy is specified.
+            \end{description}
+            \begin{description}
+              \item[par]
+                Indicates that a parallel algorithm MAY be parallelized. Synchronization techniques (e.g. mutexes) may be used.
+            \end{description}
+            \begin{description}
+              \item[par\_unseq]
+                A parallel algoithm MAY be parallelized, vectorized, and moved between threads. Vectorization MUST not use any vectorization-unsafe operations (e.g. mutexes and std::atomic)
+            \end{description}
+            \begin{description}
+              \item[unseq]
+                An algorithm's execution MAY be vectorized. Synchronization techniques MUST NOT be used. Since C++20 (the rest of the policies were introduced in C++17).
+            \end{description}
+        \end{itemize}
+      \item C++20
+        \begin{itemize}
+          \item \textbf{Modules}
+          \item \textbf{Coroutines}
+          \item \textbf{Ranges} \\
+            Extension/Generalization of algorithms and iterator libraries to make them less error-prone. Ranges are an abstraction of the following:
+            \begin{itemize}
+              \item \verb![begin, end) iterator pair : ranges::sort()!
+              \item \verb!begin + [0, size) : views::counted()!
+              \item \verb![begin, predicate) : views::take\_while() (conditionally-terminated sequences)!
+              \item \verb![begin, ..) : unbounded (e.g. views::iota())!
+            \end{itemize}
+            \verb!std::views // shorthand for std::ranges::views!
+            See <algorithm> document for copious examples using ranges.
+
+          \item \textbf{Midpoint} \\
+            Can be used on any arithmetic type, excluding bool. Can be used on objects as long as they are not incomplete types. Returns half the sum of the two inputs, no overflow occurs (this is the main reason to use STL rather than custom implementation). Inputs must point to elements in same object, else behavior is undefined. In case of decimal in average, rounds down.
+
+          \item \textbf{using enum}
+          \item \textbf{constinit}
+          \item \textbf{string formatting}
+          \item \textbf{template concepts}
+          \item \textbf{coroutines}
+          \item \textbf{modules}
+        \end{itemize}
+      \item C++23
+        \begin{itemize}
+          \item \textbf{print/println}
+            \begin{lstlisting}[style=cpp]
+#include <print>
+std::print("{0} {2}{1}!", "Hello", 23, "C++"););
+std::println(); // adds newline to std::print();
+         \end{lstlisting}
+          \item \textbf{byteswap}
+            \begin{lstlisting}[style=cpp]
+#include <bit>
+std::byteswap(T n) noexcept; // T can be any integer value
+       \end{lstlisting}
+          \item \textbf{flat\_map/flat\_set}
+        \end{itemize}
+    \end{itemize}
+\section{Concepts}
+    \begin{itemize}
+      \item \textbf{Types}
+      \item \textbf{RAII}
+        \begin{description}
+          \item[RAII]
+            Resource Acquisition Is Initialization
+        \end{description}
+    \end{itemize}
+
+\end{document}
+\enddocument
